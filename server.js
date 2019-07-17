@@ -16,6 +16,10 @@ mongoose.connect('mongodb+srv://admin:admin@cluster0-zzwsc.mongodb.net/concrete-
 })
 
 //https://www.youtube.com/watch?v=LLqq6FemMNQ&list=PLJ_KhUnlXUPtbtLwaxxUxHqvcNQndmI4B
+//https://www.npmjs.com/package/mongoose
+//https://www.youtube.com/watch?v=-j7vLmBMsEU
+//https://cloud.mongodb.com/user?n=%2Fv2%2F5cbf1fb1a6f2393459ef99b6&nextHash=%23metrics%2FreplicaSet%2F5d2f79a6d5ec132de1da26f7%2Fexplorer%2Fconcrete-backend%2Fusers%2Ffind#/atlas/login
+
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
