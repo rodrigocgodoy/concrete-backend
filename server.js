@@ -2,24 +2,26 @@ var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
-var Produto = require('./app/models/produto');
+var guid = require('guid')
+
+var Users = require('./app/models/users');
+
 mongoose.Promise = global.Promise;
+mongoose.connect('mongodb+srv://admin:admin@cluster0-zzwsc.mongodb.net/concrete-backend', {
+    useNewUrlParser: true
+}).then(() => {
+    console.log("MongoBD conectado com sucesso")
+}).catch((error) => {
+    console.log(`Hove um erro ao se conectar ao mongoDB: ${error}`)
+})
 
-mongoose.connect('mongodb://glemos:glau123@ds062448.mlab.com:62448/node-crud-api', {
-    useMongoClient: true
-});
-
-//Maneira Local: MongoDb:
-/*mongoose.connect('mongodb://localhost:27017/node-crud-api', {
-    useMongoClient: true
-});*/
+//https://www.youtube.com/watch?v=LLqq6FemMNQ&list=PLJ_KhUnlXUPtbtLwaxxUxHqvcNQndmI4B
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-var port = process.env.port || 8000;
-
 var router = express.Router();
+var port = process.env.port || 8000;
 
 router.use(function (req, res, next) {
     console.log('Algo está acontecendo aqui....');
@@ -27,72 +29,44 @@ router.use(function (req, res, next) {
 });
 
 router.get('/', function (req, res) {
-    res.json({ message: 'Beleza! Bem vindo(a) a nossa Loja XYZ' })
+    res.json({ message: 'Hello World!', guid: guid.create() })
 });
 
-router.route('/produtos')
+router.route('/users')
     .post(function (req, res) {
-        var produto = new Produto();
+        var users = new Users();
 
-        //Aqui vamos setar os campos do produto (via request):
-        produto.nome = req.body.nome;
-        produto.preco = req.body.preco;
-        produto.descricao = req.body.descricao;
+        users.id_guid = guid.create()
+        users.nome = req.body.nome;
+        users.email = req.body.email;
+        users.senha = req.body.senha;
+        // users.telefones.numero = req.body.telefones;
+        // users.telefones.ddd = req.body.telefones;
 
-        produto.save(function (error) {
-            if (error)
-                res.send('Erro ao tentar salvar o Produto....: ' + error);
-
-            res.json({ message: 'Produto Cadastrado com Sucesso!' });
-        });
+        users.save().then(() => {
+            res.json({ mensagem: 'User Cadastrado com Sucesso!' });
+        }).catch((err) => {
+            res.json({ mensagem: `Hove um erro ao tentar cadastrar um user: ${err}`})
+        })
     })
+
+router.route('/users/:user_id')
     .get(function (req, res) {
-        Produto.find(function (error, produtos) {
-            if (error)
-                res.send('Erro ao tentar Selecionar Todos os produtos...: ' + error);
+        var users = new Users();
 
-            res.json(produtos);
-        });
-    });
+        // users.findById(req.params.user_id, function (error, users) {
+        //     if (error)
+        //         res.send('Id do User não encontrado....: ' + error);
 
-router.route('/produtos/:produto_id')
-    .get(function (req, res) {
-        Produto.findById(req.params.produto_id, function (error, produto) {
-            if (error)
-                res.send('Id do Produto não encontrado....: ' + error);
+        //     res.json(users);
+        // });
 
-            res.json(produto);
-        });
+        users.findById(req.params.user_id).then(() => {
+            res.json(users);
+        }).catch((err) => {
+            res.json({ mensagem: `Id do User não encontrado: ${err}`})
+        })
     })
-    .put(function (req, res) {
-        Produto.findById(req.params.produto_id, function (error, produto) {
-            if (error)
-                res.send("Id do Produto não encontrado....: " + error);
-
-            produto.nome = req.body.nome;
-            produto.preco = req.body.preco;
-            produto.descricao = req.body.descricao;
-
-            produto.save(function (error) {
-                if (error)
-                    res.send('Erro ao atualizar o produto....: ' + error);
-
-                res.json({ message: 'Produto atualizado com sucesso!' });
-            });
-        });
-    })
-    .delete(function (req, res) {
-
-        Produto.remove({
-            _id: req.params.produto_id
-        }, function (error) {
-            if (error)
-                res.send("Id do Produto não encontrado....: " + error);
-
-            res.json({ message: 'Produto Excluído com Sucesso!' });
-        });
-    });
-
 
 app.use('/api', router);
 
