@@ -1,0 +1,20 @@
+{
+  "name": "concrete-backend",
+  "version": "1.0.0",
+  "description": "Desafio Concrete",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon"
+  },
+  "dependencies": {
+    "body-parser": "~1.19.0",
+    "express": "~4.17.1",
+    "mongoose": "~5.6.5",
+    "request": "~2.88.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.1"
+  },
+  "author": "Rodrigo Correia Godoy",
+  "license": "MIT"
+}
